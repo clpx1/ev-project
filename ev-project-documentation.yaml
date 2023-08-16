@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Company and Station API
+paths:
+  /company:
+    post:
+      summary: Add a new company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        200:
+          description: Company added successfully
+
+    get:
+      summary: Retrieve all companies
+      responses:
+        200:
+          description: List of all companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
+
+  /company/{id}:
+    get:
+      summary: Retrieve details of a company by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Details of a company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        404:
+          description: Company not found
+
+    put:
+      summary: Update a company by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company to be updated
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        200:
+          description: Company updated successfully
+
+    delete:
+      summary: Delete a company by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company to be deleted
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Company deleted successfully
+
+  /company/{id}/stations:
+    get:
+      summary: Retrieve stations of a company by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of stations of the company
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+        404:
+          description: Company not found
+
+  /company/{id}/parent:
+    get:
+      summary: Retrieve parent company by company ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Details of the parent company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        404:
+          description: Company not found
+
+  /company/{id}/station:
+    post:
+      summary: Add a station to a company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Station'
+      responses:
+        200:
+          description: Station added to the company successfully
+        404:
+          description: Company not found
+
+  /company/{id}/all-stations:
+    get:
+      summary: Retrieve all charging stations accessible to a company by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of all charging stations accessible to the company
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+        404:
+          description: Company not found
+
+  /station:
+    get:
+      summary: Retrieve all stations
+      responses:
+        200:
+          description: List of all stations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+
+  /station/all-grouped:
+    get:
+      summary: Retrieve all stations grouped by criteria
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lon
+          in: query
+          schema:
+            type: number
+        - name: radius
+          in: query
+          schema:
+            type: number
+        - name: companyId
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of grouped stations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+
+  /station/{id}:
+    get:
+      summary: Retrieve details of a station by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the station
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Details of a station
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Station'
+        404:
+          description: Station not found
+
+    put:
+      summary: Update a station by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the station to be updated
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Station'
+      responses:
+        200:
+          description: Station updated successfully
+
+    delete:
+      summary: Delete a station by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the station to be deleted
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Station deleted successfully
+
+components:
+  schemas:
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the company.
+        parent_company_id:
+          type: integer
+          nullable: true
+          description: The identifier for the parent company.
+        name:
+          type: string
+          description: The name of the company.
+        parentCompany:
+          $ref: '#/components/schemas/Company'
+          description: Reference to the parent company.
+        stations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Station'
+          description: List of stations under this company.
+
+   Station:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the station.
+        name:
+          type: string
+          description: The name of the station.
+        latitude:
+          type: number
+          format: double
+          description: The latitude coordinate of the station.
+        longitude:
+          type: number
+          format: double
+          description: The longitude coordinate of the station.
+        company:
+          $ref: '#/components/schemas/Company'
+          description: Reference to the company the station belongs to.
+        company_id:
+          type: integer
+          description: The identifier for the company the station belongs to.
+        address:
+          type: string
+          description: The address of the station.
